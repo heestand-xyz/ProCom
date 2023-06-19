@@ -3,24 +3,41 @@ import OSCKit
 
 public final class OSC: Pro {
     
-    public var io: IO = .none {
+    public var autoSetup: Bool = true {
         didSet {
-            setup()
+            if autoSetup {
+                setup()
+            }
         }
     }
     
-    public var config = OSCConfig() {
+    public var io: IO {
         didSet {
-            setup()
+            if autoSetup {
+                setup()
+            }
+        }
+    }
+    
+    public var config: OSCConfig {
+        didSet {
+            if autoSetup {
+                setup()
+            }
         }
     }
     
     var client: OSCClient?
     var server: OSCServer?
     
-    public init() {}
+    public init(io: IO, config: OSCConfig = .init()) {
+        self.io = io
+        self.config = config
+    }
     
-    private func setup() {
+    public func setup() {
+        client = nil
+        server = nil
         if io.contains(.client) {
             client = OSCClient(localPort: config.localPort)
         }

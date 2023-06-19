@@ -1,4 +1,5 @@
 
+/// Communication
 public enum Com: String, Identifiable, CaseIterable {
     
     case osc
@@ -11,10 +12,10 @@ extension Com {
 
 extension Com {
     
-    public func pro() -> any Pro {
+    public func pro(io: IO) -> any Pro {
         switch self {
         case .osc:
-            return OSC()
+            return OSC(io: io)
         }
     }
 }

@@ -1,5 +1,5 @@
 import Foundation
 
-public protocol Config {
+public protocol Config: Hashable {
     var queue: DispatchQueue { get }
 }

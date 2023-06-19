@@ -3,12 +3,12 @@ import OSCKit
 
 public struct OSCConfig: Config {
     
-    public let queue: DispatchQueue
+    public var queue: DispatchQueue
     
-    public let localPort: UInt16
-    public let remotePort: UInt16
+    public var localPort: UInt16
+    public var remotePort: UInt16
     
-    public let timeTagMode: OSCTimeTagMode
+    public var timeTagMode: OSCTimeTagMode
     
     public init(queue: DispatchQueue = Const.queue,
                 localPort: UInt16 = Const.localPort,

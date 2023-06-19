@@ -12,8 +12,7 @@ public final class ProCom {
     
     private func setup(com: Set<Com>) {
         for com in com {
-            let pro: any Pro = com.pro()
-            pro.io = io
+            let pro: any Pro = com.pro(io: io)
             proCom[com] = pro
         }
     }
