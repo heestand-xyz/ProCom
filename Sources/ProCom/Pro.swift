@@ -17,6 +17,6 @@ public protocol Pro: AnyObject {
     /// Set ``autoSetup`` to `false` to disable auto setup.
     func setup()
     
-    /// Send a value
-    func send(_ value: Value)
+    /// Send values to an address
+    func send(_ values: [any Value], to address: [String]) throws
 }

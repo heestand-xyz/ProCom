@@ -1,5 +1,9 @@
 import CoreGraphics
+import OSCKit
 
-public protocol Value {}
+public protocol Value: OSCValue {}
 
-extension CGFloat: Value {}
+extension Bool: Value {}
+extension Int: Value {}
+extension Double: Value {}
+extension String: Value {}
