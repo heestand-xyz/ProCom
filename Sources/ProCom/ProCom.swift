@@ -21,14 +21,14 @@ public final class ProCom {
         }
     }
     
-    public func send(_ values: [any Value], over coms: Com.Set, to address: [String]) throws {
+    public func send(_ message: Message, over coms: Com.Set) throws {
         for com in Com.allCases {
             guard coms.contains(com.set) else { continue }
             guard let pro: any Pro = proCom[com] else {
                 logger.warning("Com \(com.rawValue, privacy: .public) not in init")
                 continue
             }
-            try pro.send(values, to: address)
+            try pro.send(message)
         }
     }
 }

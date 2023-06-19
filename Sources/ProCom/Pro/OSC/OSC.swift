@@ -33,6 +33,8 @@ public final class OSC: Pro {
     var client: OSCClient?
     var server: OSCServer?
     
+    private var continuations: [AsyncStream<Message>.Continuation] = []
+    
     public init(io: IO, config: OSCConfig = .init()) {
         self.io = io
         self.config = config
@@ -58,17 +60,17 @@ public final class OSC: Pro {
 
 extension OSC {
     
-    public func send(_ values: [any Value], to address: [String]) throws {
+    public func send(_ message: Message) throws {
         guard let client: OSCClient else {
             logger.warning("IO not set to use client")
             return
         }
-        if address.isEmpty {
+        if message.address.pattern.isEmpty {
             logger.warning("Address is empty")
             return
         }
-        let message = OSCMessage(addressPattern: address, values: values)
-        try client.send(message, to: config.ipAddress, port: config.outPort)
+        let oscMessage = OSCMessage(message.address.osc, values: message.values)
+        try client.send(oscMessage, to: config.ipAddress, port: config.outPort)
     }
 }
 
@@ -76,7 +78,18 @@ extension OSC {
 
 extension OSC {
     
+    public func receive() -> AsyncStream<Message> {
+        let (stream, continuation) = AsyncStream.makeStream(of: Message.self)
+        continuations.append(continuation)
+        return stream
+    }
+    
     private func handler(message: OSCMessage, timeTag: OSCTimeTag) {
-        
+        let values: [any Value] = message.values.compactMap({ $0 as? any Value })
+        let address = Address(osc: message.addressPattern)
+        let message = Message(values: values, address: address)
+        for continuation in continuations {
+            continuation.yield(message)
+        }
     }
 }

@@ -5,7 +5,8 @@ final class ProComTests: XCTestCase {
     
     func testProCom() throws {
         
-        let proCom = ProCom([.osc], io: .client)
-        try proCom.send([true, 1, 1.0], over: [.osc], to: ["test"])
+        let proCom = ProCom(.osc, io: .client)
+        let message = Message(value: 123, address: Address("test"))
+        try proCom.send(message, over: .osc)
     }
 }
