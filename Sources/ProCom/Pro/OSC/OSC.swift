@@ -49,10 +49,10 @@ public final class OSC: Pro {
         server?.stop()
         client = nil
         server = nil
-        if io.contains(.client) {
+        if io.contains(.out) {
             client = OSCClient()
         }
-        if io.contains(.server) {
+        if io.contains(.in) {
             server = OSCServer(port: config.inPort,
                                receiveQueue: config.queue,
                                dispatchQueue: config.queue,

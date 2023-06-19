@@ -5,12 +5,12 @@ public struct IO: OptionSet, CustomStringConvertible {
     public let rawValue: UInt
 
     /// Receive data
-    public static let client = IO(rawValue: 1 << 0)
+    public static let out = IO(rawValue: 1 << 0)
     /// Send data
-    public static let server = IO(rawValue: 1 << 1)
+    public static let `in` = IO(rawValue: 1 << 1)
     
     public static let none: IO = []
-    public static let all: IO = [.client, .server]
+    public static let all: IO = [.out, .`in`]
     
     public init(rawValue: UInt) {
         self.rawValue = rawValue
@@ -19,10 +19,10 @@ public struct IO: OptionSet, CustomStringConvertible {
     public var description: String {
         if self == .all {
             "all"
-        } else if self == .client {
-            "client"
-        } else if self == .server {
-            "server"
+        } else if self == .out {
+            "out"
+        } else if self == .`in` {
+            "in"
         } else {
             "none"
         }

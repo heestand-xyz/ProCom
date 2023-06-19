@@ -11,7 +11,7 @@ public final class ProCom {
     
     var osc: OSC? { pros[.osc] as? OSC }
     
-    public init(_ coms: Com.Set, io: IO) {
+    public init(over coms: Com.Set, io: IO) {
         logger.info("Init of ProCom for IO (\(io, privacy: .public))")
         self.io = io
         setup(coms: coms)

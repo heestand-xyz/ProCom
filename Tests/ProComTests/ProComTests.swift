@@ -8,10 +8,11 @@ final class ProComTests: XCTestCase {
         
         let port: UInt16 = .random(in: 1_000...10_000)
         
-        let proComOut = ProCom(.osc, io: .client)
+        let proComOut = ProCom(over: .osc, io: .out)
+        
         proComOut.osc?.config.outPort = port
         
-        let proComIn = ProCom(.osc, io: .server)
+        let proComIn = ProCom(over: .osc, io: .in)
         proComIn.osc?.config.inPort = port
         
         let inTask = Task<Message?, Error> {
