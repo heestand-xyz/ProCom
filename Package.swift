@@ -15,12 +15,14 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/orchetect/OSCKit", from: "0.5.0"),
+        .package(url: "https://github.com/apple/swift-collections.git", .upToNextMinor(from: "1.0.0")),
     ],
     targets: [
         .target(
             name: "ProCom",
             dependencies: [
-                "OSCKit"
+                "OSCKit",
+                .product(name: "Collections", package: "swift-collections"),
             ]
         ),
         .testTarget(

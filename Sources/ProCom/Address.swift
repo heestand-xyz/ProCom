@@ -1,6 +1,6 @@
 import OSCKit
 
-public struct Address {
+public struct Address: Equatable, CustomStringConvertible {
     
     public var pattern: [String]
     
@@ -14,6 +14,10 @@ public struct Address {
     
     init(osc: OSCAddressPattern) {
         pattern = osc.pathComponents.map(String.init)
+    }
+    
+    public var description: String {
+        "/" + pattern.joined(separator: "/")
     }
 }
 

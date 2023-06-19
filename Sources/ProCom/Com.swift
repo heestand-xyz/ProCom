@@ -25,6 +25,12 @@ extension Com {
         public init(rawValue: UInt) {
             self.rawValue = rawValue
         }
+        
+        var coms: [Com] {
+            Com.allCases.filter { com in
+                self.contains(com.set)
+            }
+        }
     }
 }
 

@@ -15,7 +15,7 @@ public protocol Pro: AnyObject {
     /// Setup is called automatically when changing ``io`` or ``config``
     ///
     /// Set ``autoSetup`` to `false` to disable auto setup.
-    func setup()
+    func setup() throws
     
     /// Send a message
     func send(_ message: Message) throws

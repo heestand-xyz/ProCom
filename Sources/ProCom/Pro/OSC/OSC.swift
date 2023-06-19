@@ -1,5 +1,6 @@
 import os.log
 import Foundation
+import Collections
 import OSCKit
 
 public final class OSC: Pro {
@@ -8,39 +9,44 @@ public final class OSC: Pro {
     
     public var autoSetup: Bool = true {
         didSet {
-            if autoSetup {
-                setup()
-            }
+            setupIfAuto()
         }
     }
     
     public var io: IO {
         didSet {
-            if autoSetup {
-                setup()
-            }
+            setupIfAuto()
         }
     }
     
     public var config: OSCConfig {
         didSet {
-            if autoSetup {
-                setup()
-            }
+            setupIfAuto()
         }
     }
     
     var client: OSCClient?
     var server: OSCServer?
     
-    private var continuations: [AsyncStream<Message>.Continuation] = []
+    private var continuations: OrderedDictionary<UUID, AsyncStream<Message>.Continuation> = [:]
     
     public init(io: IO, config: OSCConfig = .init()) {
         self.io = io
         self.config = config
     }
     
-    public func setup() {
+    private func setupIfAuto() {
+        if autoSetup {
+            do {
+                try setup()
+            } catch {
+                logger.error("OSC Auto Setup Failed")
+            }
+        }
+    }
+    
+    public func setup() throws {
+        server?.stop()
         client = nil
         server = nil
         if io.contains(.client) {
@@ -52,6 +58,7 @@ public final class OSC: Pro {
                                dispatchQueue: config.queue,
                                timeTagMode: config.timeTagMode,
                                handler: handler)
+            try server?.start()
         }
     }
 }
@@ -62,13 +69,14 @@ extension OSC {
     
     public func send(_ message: Message) throws {
         guard let client: OSCClient else {
-            logger.warning("IO not set to use client")
+            logger.warning("OSC IO not set to use client")
             return
         }
         if message.address.pattern.isEmpty {
-            logger.warning("Address is empty")
+            logger.warning("OSC Address is empty")
             return
         }
+        logger.info("Send OSC (\(message, privacy: .public))")
         let oscMessage = OSCMessage(message.address.osc, values: message.values)
         try client.send(oscMessage, to: config.ipAddress, port: config.outPort)
     }
@@ -79,16 +87,22 @@ extension OSC {
 extension OSC {
     
     public func receive() -> AsyncStream<Message> {
+        let id = UUID()
         let (stream, continuation) = AsyncStream.makeStream(of: Message.self)
-        continuations.append(continuation)
+        continuations[id] = continuation
+        continuation.onTermination = { [weak self] _ in
+            self?.continuations.removeValue(forKey: id)
+        }
         return stream
     }
     
     private func handler(message: OSCMessage, timeTag: OSCTimeTag) {
-        let values: [any Value] = message.values.compactMap({ $0 as? any Value })
+        print("------->", type(of: message.values.first!))
+        let values: [any Value] = message.values.compactMap({ ValueType.cast($0) })
         let address = Address(osc: message.addressPattern)
         let message = Message(values: values, address: address)
-        for continuation in continuations {
+        logger.info("Receive OSC (\(message, privacy: .public))")
+        for (_, continuation) in continuations {
             continuation.yield(message)
         }
     }
